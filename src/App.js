@@ -11,6 +11,17 @@ function Square(props) {
 }
 
 class Board extends React.Component {
+  // 设置获胜条件
+  winLine = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
   // 在构造函数里声明状态
   constructor(props) {
     super(props);
@@ -33,6 +44,25 @@ class Board extends React.Component {
       isNext: !this.state.isNext // 修改后将标志位取反
     });
   }
+  /**
+   * 判断获胜者
+   */
+  checkWinner(squares) {
+    let winner = '';
+    this.winLine.some(line => {
+      const [a, b, c] = line;
+      if (
+        squares[a] &&
+        squares[a] === squares[b] &&
+        squares[a] === squares[c]
+      ) {
+        winner = squares[a];
+        return true;
+      }
+      winner = '';
+    });
+    return winner;
+  }
 
   renderSquare(i) {
     return (
@@ -44,7 +74,15 @@ class Board extends React.Component {
   }
 
   render() {
-    const status = 'Next player: X';
+    // 获胜者
+    const winner = this.checkWinner(this.state.squares);
+    let status = '';
+    if (winner) {
+      status = 'Winner: ' + winner;
+    } else {
+      // 根据状态来判断下一个谁操作
+      status = `Next player: ${this.state.isNext ? 'X' : 'O'}`;
+    }
 
     return (
       <div>
